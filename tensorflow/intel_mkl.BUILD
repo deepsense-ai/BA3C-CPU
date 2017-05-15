@@ -1,0 +1,25 @@
+cc_library(
+    name = "main",
+    srcs = glob(["lib/intel64/*.so"], 
+        exclude = [
+        	"lib/intel64/libmkl_blacs_intelmpi_lp64.so",
+            "lib/intel64/libmkl_blacs_openmpi_ilp64.so",
+            "lib/intel64/libmkl_blacs_openmpi_lp64.so",
+        	"lib/intel64/libmkl_blacs_intelmpi_ilp64.so",
+        	"lib/intel64/libmkl_blacs_intelmpi_lp64.so",
+        	"lib/intel64/libmkl_tbb_thread.so",
+        	"lib/intel64/libmkl_blacs_sgimpt_ilp64.so",
+        	"lib/intel64/libmkl_blacs_sgimpt_lp64.so",
+        	"lib/intel64/libmkl_avx512_mic.so",
+        	"lib/intel64/libmkl_ao_worker.so",
+        	"lib/intel64/libmkl_scalapack_ilp64.so",
+        	"lib/intel64/libmkl_scalapack_lp64.so",
+            ]
+    ),
+#           ["lib/intel64/libmkl_intel_thread.so",
+#            "lib/intel64/libmkl_core.so",
+#            "lib/intel64/libmkl_intel_lp64.so"],
+    hdrs = glob(["include/*.h"]),
+    visibility = ["//visibility:public"],
+    linkopts = ["-pthread -fopenmp -lpthread"],
+)
