@@ -2,7 +2,7 @@
 
 This is the repository containing the source code for our paper concerning playing Atari Games on CPU.
 
-The tensorflow directory contains our fork of TensorFlow 0.11rc0, adapted to use MKL convolutions. It can be compiled from sources using the bazel build system.
+The tensorflow directory contains our fork of TensorFlow 0.11rc0, adapted to use MKL convolutions. It can be compiled from sources using the bazel build system or installed from the wheel provided in the tensorflow-0.11.0rc0-py2-none-any.whl file.
 
 The tensorpack directory contains our fork of the Tensorpack framework used for performing the experiments, along with the implementation of the BA3C algorithm for training agents for playing atari games.
 
