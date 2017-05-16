@@ -19,7 +19,6 @@ import six
 from six.moves import queue
 from tensorflow.python.framework import ops
 
-from ml_lib.ml_utils import start_timer, elapsed_time_ms
 from tensorpack import *
 from tensorpack.RL.common import MapPlayerState
 from tensorpack.RL.gymenv import GymEnv
@@ -52,9 +51,9 @@ from common import (play_model, Evaluator, eval_model_multithread)
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', help='comma separated list of GPU(s) to use.') # nargs='*' in multi mode
 parser.add_argument('--load', help='load model')
-parser.add_argument('--nr_towers', type=int)
+parser.add_argument('--nr_towers', type=int, default=1)
 parser.add_argument('--train_log_path', type=str, default='train_log')
-parser.add_argument('--nr_predict_towers', type=int)
+parser.add_argument('--nr_predict_towers', type=int, default=1)
 parser.add_argument('--intra_op_par', type=int, default=None)
 parser.add_argument('--inter_op_par', type=int, default=None)
 parser.add_argument('--cpu_device_count', type=int, default=None)
@@ -128,7 +127,6 @@ class DelayingDataSource(ProxyDataFlow):
         return ds_size
     
     def get_data(self):
-        print 'DelayingDataSource get_data'
         while True:
             assert len(self.buffer) <= self.delay
             while len(self.buffer) != self.delay:
@@ -138,7 +136,6 @@ class DelayingDataSource(ProxyDataFlow):
             new_dp = next(self.ds.get_data())
             self.buffer.append(new_dp)
             oldest_dp = self.buffer.pop(0)
-            print 'DelayingDataSource get_data yield!'
             yield oldest_dp
 
 
@@ -293,7 +290,7 @@ class MySimulatorMaster(SimulatorMaster, Callback):
         self.dummy = dummy
         self.predictor_threads = predictor_threads
 
-        self.last_queue_put = start_timer()
+        self.last_queue_put = 0
         self.queue_put_times = []
         self.predict_batch_size = predict_batch_size
         self.counter = 0
@@ -368,13 +365,13 @@ class MySimulatorMaster(SimulatorMaster, Callback):
 
     def log_queue_put(self):
         self.counter += 1
-        elapsed_last_put = elapsed_time_ms(self.last_queue_put)
+        elapsed_last_put = 0
         self.queue_put_times.append(elapsed_last_put)
         k = 1000
         if self.counter % 1 == 0:
             logger.debug("queue_put_times elapsed {elapsed}".format(elapsed=elapsed_last_put))
             logger.debug("queue_put_times {puts_s} puts/s".format(puts_s=1000.0 / np.mean(self.queue_put_times[-k:])))
-        self.last_queue_put = start_timer()
+        self.last_queue_put = 0
 
 
 def get_config(args=None):

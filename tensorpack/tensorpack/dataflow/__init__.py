@@ -17,7 +17,8 @@ def _global_import(name):
         del globals()[name]
         for k in lst:
             globals()[k] = p.__dict__[k]
-    except:
+    except Exception as e:
+        print e
         print 'Error importing: ', name
 
 __SKIP = ['dftools', 'dataset', 'imgaug']

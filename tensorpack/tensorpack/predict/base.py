@@ -7,7 +7,6 @@ from abc import abstractmethod, ABCMeta, abstractproperty
 import tensorflow as tf
 import six
 
-from ml_lib.ml_utils import start_timer, elapsed_time_ms
 from ..models import TowerContext
 from ..utils import logger
 from ..tfutils import get_vars_by_names
@@ -84,12 +83,8 @@ class OnlinePredictor(PredictorBase):
             "{} != {}".format(len(dp), len(self.input_vars))
         feed = dict(zip(self.input_vars, dp))
 
-        timer = start_timer()
+        timer = 0
         output = self.session.run(self.output_vars, feed_dict=feed)
-        #logger.info('OnlinePredictor {mb_size}, timer = {timer} ms'.format(mb_size=z, timer=elapsed_time_ms(timer)))
-        #print 'kurwa_predictor', dp
-        # for a in output:
-        #     print 'kurwa_predictor', a.shape, a.dtype, a
         return output
 
 class DummyOnlinePredictor(PredictorBase):
@@ -98,9 +93,6 @@ class DummyOnlinePredictor(PredictorBase):
 
     def _do_call(self, dp):
         z = len(dp[0])
-        #print 'yeah kurwa'
-
-        # KURWA: LOGMAC
         logger.debug('DummyOnlinePredictor ' + str(z))
         import numpy as np
         batch_size = z

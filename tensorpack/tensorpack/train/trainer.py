@@ -7,8 +7,6 @@ import threading
 import time
 from six.moves import zip
 
-from ml_lib.ml_utils import elapsed_time_ms
-from ml_lib.ml_utils import start_timer
 from tensorpack.predict.base import DummyOnlinePredictor
 from .base import Trainer
 
@@ -259,9 +257,9 @@ class QueueInputTrainer(Trainer):
         if self.config.extra_arg['threads_to_trace'] > 0:
             run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
             run_metadata = tf.RunMetadata()
-            timer = start_timer()
+            timer = 0
             self.sess.run(self.train_op, options=run_options, run_metadata=run_metadata)
-            elapsed_time = elapsed_time_ms(timer)
+            elapsed_time = 0
             tl = timeline.Timeline(run_metadata.step_stats)
             ctf = tl.generate_chrome_trace_format()
             with open('timeline_intra_{intra_op_par}_nrthreads_{nr_threads}_thidx_{th_idx}_{oper_id}.json'.format(
@@ -272,9 +270,9 @@ class QueueInputTrainer(Trainer):
                     oper_id=len(self.elapsed_times[idx])), 'w') as f:
                 f.write(ctf)
         else:
-            timer = start_timer()
+            timer = 0
             self.sess.run(self.train_op)
-            elapsed_time = elapsed_time_ms(timer)
+            elapsed_time = 0
 
 
         self.elapsed_times[idx].append(elapsed_time)

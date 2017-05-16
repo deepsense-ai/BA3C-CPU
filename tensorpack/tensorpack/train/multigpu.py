@@ -12,7 +12,6 @@ import itertools, re
 from six.moves import zip, range
 from tensorflow.python.client import timeline
 
-from ml_lib.ml_utils import start_timer, elapsed_time_ms
 from ..models import TowerContext
 from ..utils import *
 from ..utils.concurrency import LoopThread
@@ -133,7 +132,6 @@ class AsyncMultiGPUTrainer(MultiGPUTrainer):
 
         self._start_async_threads(grad_list)
         self.step_counter = 0
-        self.main_thread_timer = start_timer()
         self.main_thread_counter = 0
         self.step_times = []
 
@@ -167,9 +165,9 @@ class AsyncMultiGPUTrainer(MultiGPUTrainer):
                     run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
                     run_metadata = tf.RunMetadata()
 
-                    timer = start_timer()
+                    timer = 0
                     self.sess.run([op], options=run_options, run_metadata=run_metadata)
-                    elapsed_time = elapsed_time_ms(timer)
+                    elapsed_time = 0
                     tl = timeline.Timeline(run_metadata.step_stats)
                     ctf = tl.generate_chrome_trace_format()
                     with open('timeline_intra_{intra_op_par}_nrthreads_{nr_threads}_thidx_{th_idx}_{oper_id}.json'.format(
@@ -180,9 +178,9 @@ class AsyncMultiGPUTrainer(MultiGPUTrainer):
                             oper_id=len(self.elapsed_times[idx])), 'w') as f:
                         f.write(ctf)
                 else:
-                    timer = start_timer()
+                    timer = 0
                     self.sess.run([op])
-                    elapsed_time = elapsed_time_ms(timer)
+                    elapsed_time = 0
 
 
                 print 'Completed train in thread, id={idx}, {oper_id}, {elapsed_time}'.format(
@@ -226,17 +224,10 @@ class AsyncMultiGPUTrainer(MultiGPUTrainer):
         super(AsyncMultiGPUTrainer, self).run_step()
 
         self.main_thread_counter += 1
-        elapsed_time = elapsed_time_ms(self.main_thread_timer)
+        elapsed_time = 0
         self.step_times.append(elapsed_time)
         last_k = 20
         mean_step_time = np.mean(self.step_times[-last_k:])
-
-        s = ("step_time {step_time}, mean_step_time {mean_step_time}, it/s {it_s}".format(
-            step_time=elapsed_time, mean_step_time=mean_step_time, it_s=1000.0 / mean_step_time))
-
-        #print s
-        logger.error(s)
-        self.main_thread_timer = start_timer()
 
     def _trigger_epoch(self):
         self.async_running = False
