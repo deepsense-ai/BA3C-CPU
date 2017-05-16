@@ -16,7 +16,7 @@ source /usr/local/intel/compilers_and_libraries/linux/mkl/bin/mklvars.sh intel64
 ```
 4. Set runtime library path to openmp library:
 ```
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2017.0.098/linux/compiler/lib/intel64_lin/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/intel/compilers_and_libraries_2017.0.098/linux/compiler/lib/intel64_lin/
 ```
 5. Install our custom TensorFlow wheel:
 ```
